@@ -1,6 +1,6 @@
 """getWeather.py gets the weather from OpenWeatherMap.
 
-It puts the temperature in a small label in the lower left of the screen.
+It puts the temperature in a small draggable label in the lower left of the screen.
 """
 
 import time
@@ -25,7 +25,6 @@ class temperature:
 		self.label.master.wm_attributes("-topmost", True)
 		self.label.master.geometry("+5+850")
 		self.label.master.wm_attributes("-transparentcolor", "lavender blush")
-		#self.label.master.wm_attributes("-disabled", True)
 		self.label.bind("<Button-1>", self.handler.click)
 		self.label.bind("<B1-Motion>", self.handler.drag)
 		self.label.pack()
@@ -41,9 +40,7 @@ class temperature:
 			w = observation.get_weather()
 			temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
 			ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
-			print(ftemp)
 			self.label.configure(text = ftemp)
-			print(time.localtime())
 		self.label.after(600000, self.update_temp)
 	
 	def get_pointer_x(self):
