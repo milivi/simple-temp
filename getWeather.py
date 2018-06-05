@@ -1,6 +1,6 @@
 """getWeather.py gets the weather from OpenWeatherMap.
 
-It puts the temperature in a small label in the lower left of the screen.
+It puts the temperature in a small draggable label in the lower left of the screen.
 """
 
 import time
@@ -16,7 +16,6 @@ class temperature:
 		Parameter: place - the location code to search.
 		"""
 		self.place = place
-		self.handler = handler(self)
 		
 		self.label = tkinter.Label(text=':(', font=('Courier','20'), 
 					fg='white', bg='lavender blush', 
@@ -25,9 +24,8 @@ class temperature:
 		self.label.master.wm_attributes("-topmost", True)
 		self.label.master.geometry("+5+850")
 		self.label.master.wm_attributes("-transparentcolor", "lavender blush")
-		#self.label.master.wm_attributes("-disabled", True)
-		self.label.bind("<Button-1>", self.handler.click)
-		self.label.bind("<B1-Motion>", self.handler.drag)
+		self.label.bind("<Button-1>", self.click)
+		self.label.bind("<B1-Motion>", self.drag)
 		self.label.pack()
 		
 		self.update_temp()
@@ -41,9 +39,7 @@ class temperature:
 			w = observation.get_weather()
 			temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
 			ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
-			print(ftemp)
 			self.label.configure(text = ftemp)
-			print(time.localtime())
 		self.label.after(600000, self.update_temp)
 	
 	def get_pointer_x(self):
@@ -61,16 +57,6 @@ class temperature:
 			    y - y-coordinate to move to
 		"""
 		self.label.master.geometry(f'+{x}+{y}')
-
-class handler:
-	def __init__ (self, temperature_label):
-		"""Constructor for the handler class.
-		
-		Parameter: temperature_label - a temperature object
-		"""
-		self.temperature_label = temperature_label
-		self.offset_x = 0
-		self.offset_y = 0
 		
 	def click(self, event):
 		"""On the click event, saves the coordinates of the event."""
@@ -78,10 +64,12 @@ class handler:
 		self.offset_y = event.y
 	
 	def drag(self, event):
-		"""On the drag event, calculates the position to which the label is being dragged."""
-		x = self.temperature_label.get_pointer_x() - self.offset_x
-		y = self.temperature_label.get_pointer_y() - self.offset_y
-		self.temperature_label.update_position(x, y)
+		"""On the drag event, calculates and updates the labels position."""
+		x = self.get_pointer_x() - self.offset_x 
+		y = self.get_pointer_y() - self.offset_y
+		self.update_position(x, y)
+
+
 
 
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
