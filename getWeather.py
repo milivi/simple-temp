@@ -25,8 +25,12 @@ class temperature:
 		self.label.master.geometry("+5+850")
 		self.label.master.wm_attributes("-transparentcolor", "lavender blush")
 		self.label.bind("<Button-1>", self.click)
+		self.label.bind("<Button-3>", self.right_click)
 		self.label.bind("<B1-Motion>", self.drag)
 		self.label.pack()
+		
+		self.popup_menu = tkinter.Menu(self.label.master)
+		self.popup_menu.add_command(label="Exit", command = self.label.master.destroy)
 		
 		self.update_temp()
 
@@ -59,7 +63,7 @@ class temperature:
 		self.label.master.geometry(f'+{x}+{y}')
 		
 	def click(self, event):
-		"""On the click event, saves the coordinates of the event."""
+		"""On the left click event, saves the coordinates of the event."""
 		self.offset_x = event.x
 		self.offset_y = event.y
 	
@@ -69,7 +73,12 @@ class temperature:
 		y = self.get_pointer_y() - self.offset_y
 		self.update_position(x, y)
 
-
+	def right_click(self, event):
+		"""On right click, popup menu"""
+		try:
+			self.popup_menu.tk_popup(event.x_root, event.y_root, 0)
+		finally:
+			self.popup_menu.grab_release()
 
 
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
