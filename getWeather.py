@@ -30,6 +30,7 @@ class temperature:
 		self.label.pack()
 		
 		self.popup_menu = tkinter.Menu(self.label.master)
+		self.popup_menu.add_command(label="Switch Color", command = self.change_color)
 		self.popup_menu.add_command(label="Exit", command = self.label.master.destroy)
 		
 		self.update_temp()
@@ -79,6 +80,17 @@ class temperature:
 			self.popup_menu.tk_popup(event.x_root, event.y_root, 0)
 		finally:
 			self.popup_menu.grab_release()
+			
+	def change_color(self):
+		if self.label.cget('fg') == 'black':
+			font = 'white'
+			backing = 'lavender blush'
+		else:
+			font = 'black'
+			backing = 'grey'
+		self.label.config(fg=font, bg=backing)
+		self.label.master.wm_attributes("-transparentcolor", backing)
+		
 
 
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
