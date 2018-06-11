@@ -8,18 +8,17 @@ import math
 import tkinter
 import pyowm
 
-
 class temperature:
 	def __init__ (self, place):
 		"""Constructor for temperature class.
 
-		Parameter: place - the location code to search.
+		Parameter: place - the location to search.
 		"""
 		self.place = place
 		
 		self.label = tkinter.Label(text=':(', font=('Courier','20'), 
 					fg='white', bg='lavender blush', 
-					height = 2, width=3)
+					height=2, width=3)
 		self.label.master.overrideredirect(True)
 		self.label.master.wm_attributes("-topmost", True)
 		self.label.master.geometry("+5+850")
@@ -30,15 +29,15 @@ class temperature:
 		self.label.pack()
 		
 		self.popup_menu = tkinter.Menu(self.label.master)
-		self.popup_menu.add_command(label="Switch Color", command = self.change_color)
-		self.popup_menu.add_command(label="Exit", command = self.label.master.destroy)
+		self.popup_menu.add_command(label="Switch Color", command=self.change_color)
+		self.popup_menu.add_command(label="Change Location", command=self.change_location)
+		self.popup_menu.add_command(label="Exit", command=self.label.master.destroy)
 		
 		self.update_temp()
 
 	def update_temp(self):
-		"""Update the temperature every 10 minutes"""
+		"""Update the temperature every 10 minutes between 7 AM and 5 PM"""
 		cur_hour = time.localtime()[3]
-		#only update between 7 AM and 5 PM
 		if cur_hour > 6 and cur_hour < 17:
 			observation = owm.weather_at_place(self.place)
 			w = observation.get_weather()
@@ -46,6 +45,7 @@ class temperature:
 			ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
 			self.label.configure(text = ftemp)
 		self.label.after(600000, self.update_temp)
+		print(self.place)
 	
 	def get_pointer_x(self):
 		"""Return the x-coordinate of the cursor position."""
@@ -82,6 +82,7 @@ class temperature:
 			self.popup_menu.grab_release()
 			
 	def change_color(self):
+                """Switches the color of the label between light and dark."""
 		if self.label.cget('fg') == 'black':
 			font = 'white'
 			backing = 'lavender blush'
@@ -91,6 +92,27 @@ class temperature:
 		self.label.config(fg=font, bg=backing)
 		self.label.master.wm_attributes("-transparentcolor", backing)
 		
+	def change_location(self):
+		"""Creates window to change the weather location."""
+		location_win = tkinter.Tk()
+		location_win.geometry("500x500")
+		location_win.title("Get Outta Town")
+		entry = tkinter.Entry(location_win)
+		entry.pack()
+		b = tkinter.Button(location_win, text="Enter", command=lambda: self.check_location(entry.get()))
+		b.pack()
+		location_win.mainloop()
+
+	def check_location(self, new_location):
+		"""Checks the entered weather location and updates if it is valid."""
+		registry = owm.city_id_registry()
+		poss_locations = registry.locations_for(new_location, country='US', matching='nocase')
+		print(poss_locations)
+		if poss_locations:
+			print("You are valid")
+			print(poss_locations[0])
+			self.place = new_location
+	
 
 
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
