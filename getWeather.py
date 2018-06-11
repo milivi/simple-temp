@@ -1,4 +1,4 @@
-"""getWeather.py gets the weather from OpenWeatherMap.
+"""GetWeather.py gets the weather from OpenWeatherMap.
 
 It puts the temperature in a small draggable label in the lower left of the screen.
 """
@@ -7,6 +7,7 @@ import time
 import math
 import tkinter
 import pyowm
+from weather.change_location import change_location
 
 class temperature:
 	def __init__ (self, place):
@@ -30,7 +31,7 @@ class temperature:
 		
 		self.popup_menu = tkinter.Menu(self.label.master)
 		self.popup_menu.add_command(label="Switch Color", command=self.change_color)
-		self.popup_menu.add_command(label="Change Location", command=self.change_location)
+		self.popup_menu.add_command(label="Change Location", command=self.get_location)
 		self.popup_menu.add_command(label="Exit", command=self.label.master.destroy)
 		
 		self.update_temp()
@@ -39,12 +40,12 @@ class temperature:
 		"""Update the temperature every 10 minutes between 7 AM and 5 PM"""
 		cur_hour = time.localtime()[3]
 		if cur_hour > 6 and cur_hour < 17:
-			observation = owm.weather_at_place(self.place)
+			observation = owm.weather_at_id(self.place)
 			w = observation.get_weather()
 			temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
 			ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
 			self.label.configure(text = ftemp)
-		self.label.after(600000, self.update_temp)
+		self.timer = self.label.after(60000, self.update_temp)
 		print(self.place)
 	
 	def get_pointer_x(self):
@@ -75,14 +76,14 @@ class temperature:
 		self.update_position(x, y)
 
 	def right_click(self, event):
-		"""On right click, popup menu"""
+		"""On right click, popup menu appears."""
 		try:
 			self.popup_menu.tk_popup(event.x_root, event.y_root, 0)
 		finally:
 			self.popup_menu.grab_release()
 			
 	def change_color(self):
-                """Switches the color of the label between light and dark."""
+		"""Switches the color of the label between light and dark."""
 		if self.label.cget('fg') == 'black':
 			font = 'white'
 			backing = 'lavender blush'
@@ -92,31 +93,17 @@ class temperature:
 		self.label.config(fg=font, bg=backing)
 		self.label.master.wm_attributes("-transparentcolor", backing)
 		
-	def change_location(self):
-		"""Creates window to change the weather location."""
-		location_win = tkinter.Tk()
-		location_win.geometry("500x500")
-		location_win.title("Get Outta Town")
-		entry = tkinter.Entry(location_win)
-		entry.pack()
-		b = tkinter.Button(location_win, text="Enter", command=lambda: self.check_location(entry.get()))
-		b.pack()
-		location_win.mainloop()
-
-	def check_location(self, new_location):
-		"""Checks the entered weather location and updates if it is valid."""
-		registry = owm.city_id_registry()
-		poss_locations = registry.locations_for(new_location, country='US', matching='nocase')
-		print(poss_locations)
-		if poss_locations:
-			print("You are valid")
-			print(poss_locations[0])
-			self.place = new_location
-	
-
+	def get_location(self):
+		"""Get the location change input by user and update the temperature."""
+		change_loc = change_location(owm, self.place)
+		self.place = change_loc.get_location().get_ID()
+		print(f'New Location {self.place}')
+		change_loc.destroy()
+		self.label.after_cancel(self.timer)
+		self.update_temp()
 
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
-place = 'Olean,US'
+place = 5129780
 
 widg = temperature(place)
 widg.label.mainloop()
