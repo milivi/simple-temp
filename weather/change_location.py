@@ -15,9 +15,13 @@ class change_location:
 		self.location_win = tkinter.Toplevel()
 		self.location_win.geometry("500x500")
 		self.location_win.title("Get Outta Town")
-		self.entry = tkinter.Entry(self.location_win)
-		self.entry.pack()
-		self.b = tkinter.Button(self.location_win, text="Enter", command=lambda: self.check_location(self.entry.get()))
+		self.city_entry = tkinter.Entry(self.location_win)
+		self.city_entry.insert(0, cur_location)
+		self.city_entry.pack()
+		self.country_entry = tkinter.Entry(self.location_win)
+		self.country_entry.insert(0, "US")
+		self.country_entry.pack()
+		self.b = tkinter.Button(self.location_win, text="Enter", command=lambda: self.check_location(self.city_entry.get(), self.country_entry.get()))
 		self.b.pack()
 		self.owm = owm
 		self.new_location = cur_location
@@ -27,18 +31,28 @@ class change_location:
 		self.location_win.mainloop()
 		return self.new_location
 
-	def check_location(self, new_location):
+	def check_location(self, new_location, new_country):
 		"""Checks the entered weather location and updates if it is valid."""
 		registry = self.owm.city_id_registry()
-		poss_locations = registry.locations_for(new_location, country='US', matching='nocase')
-		print(poss_locations)
+		print(new_country)
+		try:
+			poss_locations = registry.locations_for(new_location, country=new_country, matching='nocase')
+		except(ValueError):
+			self.invalid_entry()
 		if poss_locations:
-			print("You are valid")
-			print(poss_locations[0])
-			print(type(poss_locations[0]))
-			self.new_location = poss_locations[0]
+			self.new_location = poss_locations[0].get_ID()
 			self.location_win.quit()
+		else:
+			self.invalid_entry()
 		
 	def destroy(self):
 		"""Close the window."""
-		self.location_win.destroy()
+		try:
+			self.location_win.destroy()
+		except(tkinter.TclError):
+			pass
+	
+	def invalid_entry(self):
+		"""Warn that the entered city is not a valid location."""
+		invalid = tkinter.Label(self.location_win, text="Invalid City, try again", fg="red")
+		invalid.pack()

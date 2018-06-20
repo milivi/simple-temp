@@ -44,8 +44,8 @@ class temperature:
 			w = observation.get_weather()
 			temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
 			ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
-			self.label.configure(text = ftemp)
-		self.timer = self.label.after(60000, self.update_temp)
+			self.label.configure(text=ftemp)
+		self.timer = self.label.after(600000, self.update_temp)
 		print(self.place)
 	
 	def get_pointer_x(self):
@@ -96,7 +96,7 @@ class temperature:
 	def get_location(self):
 		"""Get the location change input by user and update the temperature."""
 		change_loc = change_location.change_location(owm, self.place)
-		self.place = change_loc.get_location().get_ID()
+		self.place = change_loc.get_location()
 		print(f'New Location {self.place}')
 		change_loc.destroy()
 		self.label.after_cancel(self.timer)
