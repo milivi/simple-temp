@@ -7,7 +7,7 @@ import time
 import math
 import tkinter
 import pyowm
-import change_location
+import change_location as wcl
 
 class temperature:
 	def __init__ (self, place):
@@ -18,12 +18,12 @@ class temperature:
 		self.place = place
 		
 		self.label = tkinter.Label(text=':(', font=('Courier','20'), 
-					fg='white', bg='lavender blush', 
+					fg='black', bg='grey', 
 					height=2, width=3)
 		self.label.master.overrideredirect(True)
 		self.label.master.wm_attributes("-topmost", True)
 		self.label.master.geometry("+5+850")
-		self.label.master.wm_attributes("-transparentcolor", "lavender blush")
+		self.label.master.wm_attributes("-transparentcolor", "grey")
 		self.label.bind("<Button-1>", self.click)
 		self.label.bind("<Button-3>", self.right_click)
 		self.label.bind("<B1-Motion>", self.drag)
@@ -95,10 +95,9 @@ class temperature:
 		
 	def get_location(self):
 		"""Get the location change input by user and update the temperature."""
-		change_loc = change_location.change_location(owm, self.place)
+		change_loc = wcl.change_location(owm, self.place)
 		self.place = change_loc.get_location()
 		print(f'New Location {self.place}')
-		change_loc.destroy()
 		self.label.after_cancel(self.timer)
 		self.update_temp()
 
