@@ -33,6 +33,10 @@ class change_location:
 								self.check_location(self.city_entry.get(), 
 												self.country_entry.get().upper()))
 		self.b.pack()
+		
+		self.invalid = tkinter.Label(self.location_win, 
+								text="Invalid City, try again", fg="red")
+		
 		self.owm = owm
 		self.new_location = cur_location
 		self.x_coordinate = x_coordinate()
@@ -65,16 +69,12 @@ class change_location:
 		"""Close the window."""
 		try:
 			self.location_win.destroy()
-			print("destroyed")
 		except tkinter.TclError as error:
-			print(error)
 			pass
 	
 	def invalid_entry(self):
 		"""Warn that the entered city is not a valid location."""
-		invalid = tkinter.Label(self.location_win, 
-							text="Invalid City, try again", fg="red")
-		invalid.pack()
+		self.invalid.pack()
 		
 	def click(self, event):
 		"""On the left click event, saves the coordinates of the event."""
