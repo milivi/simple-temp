@@ -14,25 +14,28 @@ class change_location:
 			    cur_location - the current weather location"""
 		self.location_win = tkinter.Tk()
 		self.location_win.overrideredirect(True)
-		self.location_win.geometry("200x200")
+		self.location_win.geometry("200x100")
 		self.location_win.geometry("+5+750")
 		self.location_win.title("Get Outta Town")
 		self.location_win.bind("<Button-1>", self.click)
 		self.location_win.bind("<B1-Motion>", self.drag)
 		#self.location_win.protocol("WM_DELETE_WINDOW", self.on_close)
 		
+		tkinter.Label(self.location_win, text='City').grid(row=0, column=0, pady=10)
 		self.city_entry = tkinter.Entry(self.location_win)
 		self.city_entry.insert(0, cur_location)
-		self.city_entry.pack()
+		self.city_entry.grid(row=0, column=1, pady=10)
+		
+		tkinter.Label(self.location_win, text='Country').grid(row=1, column=0)
 		self.country_entry = tkinter.Entry(self.location_win)
 		self.country_entry.insert(0, "US")
-		self.country_entry.pack()
+		self.country_entry.grid(row=1, column=1)
 		
 		self.b = tkinter.Button(self.location_win, text="Enter", 
 							command=lambda: 
 								self.check_location(self.city_entry.get(), 
 												self.country_entry.get().upper()))
-		self.b.pack()
+		self.b.grid(row=2, column=1, pady=10)
 		
 		self.invalid = tkinter.Label(self.location_win, 
 								text="Invalid City, try again", fg="red")

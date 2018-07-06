@@ -32,7 +32,7 @@ class temperature:
 		self.popup_menu = tkinter.Menu(self.label.master)
 		self.popup_menu.add_command(label="Switch Color", command=self.change_color)
 		self.popup_menu.add_command(label="Change Location", command=self.get_location)
-		self.popup_menu.add_command(label="Exit", command=self.label.master.destroy)
+		self.popup_menu.add_command(label="Exit", command=self.destroy)
 		
 		self.update_temp()
 
@@ -95,11 +95,19 @@ class temperature:
 		
 	def get_location(self):
 		"""Get the location change input by user and update the temperature."""
-		change_loc = wcl.change_location(owm, self.place, self.get_pointer_x, self.get_pointer_y)
-		self.place = change_loc.get_location()
+		self.change_loc = wcl.change_location(owm, self.place, self.get_pointer_x, self.get_pointer_y)
+		self.place = self.change_loc.get_location()
+		print('you')
 		print(f'New Location {self.place}')
 		self.label.after_cancel(self.timer)
-		self.update_temp()
+		try:
+			self.update_temp()
+		except tkinter.TclError:
+			pass
+		
+	def destroy(self):
+		self.change_loc.destroy()
+		self.label.master.destroy()
 
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
 place = 5129780
