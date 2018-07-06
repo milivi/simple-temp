@@ -55,7 +55,7 @@ class temperature:
 	def get_pointer_y(self):
 		"""Return the y-coordinate of the cursor position."""
 		return self.label.master.winfo_pointery()
-	
+
 	def update_position(self, x, y):
 		"""Update the position of the label.
 		
@@ -95,7 +95,7 @@ class temperature:
 		
 	def get_location(self):
 		"""Get the location change input by user and update the temperature."""
-		change_loc = wcl.change_location(owm, self.place)
+		change_loc = wcl.change_location(owm, self.place, self.get_pointer_x, self.get_pointer_y)
 		self.place = change_loc.get_location()
 		print(f'New Location {self.place}')
 		self.label.after_cancel(self.timer)
