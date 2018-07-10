@@ -98,7 +98,6 @@ class temperature:
 		self.change_loc = wcl.change_location(owm, place_location, self.get_pointer_x, self.get_pointer_y)
 		place_location = self.change_loc.get_location()
 		self.place = place_location.get_ID()
-		print(f'New Location {place_location}')
 		self.label.after_cancel(self.timer)
 		try:
 			self.update_temp()
@@ -106,6 +105,7 @@ class temperature:
 			pass
 		
 	def destroy(self):
+		"""Destroy any windows remaining open."""
 		self.change_loc.destroy()
 		self.label.master.destroy()
 
