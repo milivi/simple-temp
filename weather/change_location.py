@@ -19,11 +19,10 @@ class change_location:
 		self.location_win.title("Get Outta Town")
 		self.location_win.bind("<Button-1>", self.click)
 		self.location_win.bind("<B1-Motion>", self.drag)
-		#self.location_win.protocol("WM_DELETE_WINDOW", self.on_close)
 		
 		tkinter.Label(self.location_win, text='City').grid(row=0, column=0, pady=10)
 		self.city_entry = tkinter.Entry(self.location_win)
-		self.city_entry.insert(0, cur_location)
+		self.city_entry.insert(0, cur_location.get_name())
 		self.city_entry.grid(row=0, column=1, pady=10)
 		
 		tkinter.Label(self.location_win, text='Country').grid(row=1, column=0)
@@ -63,7 +62,7 @@ class change_location:
 			self.invalid_entry()
 		else:
 			if poss_locations:
-				self.new_location = poss_locations[0].get_ID()
+				self.new_location = poss_locations[0]
 				self.location_win.quit()
 			else:
 				self.invalid_entry()

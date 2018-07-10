@@ -40,13 +40,12 @@ class temperature:
 		"""Update the temperature every 10 minutes between 7 AM and 5 PM"""
 		cur_hour = time.localtime()[3]
 		if cur_hour > 6 and cur_hour < 17:
-			observation = owm.weather_at_id(self.place)
-			w = observation.get_weather()
+			self.observation = owm.weather_at_id(self.place)
+			w = self.observation.get_weather()
 			temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
 			ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
 			self.label.configure(text=ftemp)
 		self.timer = self.label.after(600000, self.update_temp)
-		print(self.place)
 	
 	def get_pointer_x(self):
 		"""Return the x-coordinate of the cursor position."""
@@ -95,10 +94,11 @@ class temperature:
 		
 	def get_location(self):
 		"""Get the location change input by user and update the temperature."""
-		self.change_loc = wcl.change_location(owm, self.place, self.get_pointer_x, self.get_pointer_y)
-		self.place = self.change_loc.get_location()
-		print('you')
-		print(f'New Location {self.place}')
+		place_location = self.observation.get_location()
+		self.change_loc = wcl.change_location(owm, place_location, self.get_pointer_x, self.get_pointer_y)
+		place_location = self.change_loc.get_location()
+		self.place = place_location.get_ID()
+		print(f'New Location {place_location}')
 		self.label.after_cancel(self.timer)
 		try:
 			self.update_temp()
