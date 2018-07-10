@@ -8,6 +8,8 @@ import math
 import tkinter
 import pyowm
 import change_location as wcl
+from pyowm.exceptions.parse_response_error import ParseResponseError
+from pyowm.exceptions.api_call_error import APICallError
 
 class temperature:
 	def __init__ (self, place):
@@ -40,10 +42,14 @@ class temperature:
 		"""Update the temperature every 10 minutes between 7 AM and 5 PM"""
 		cur_hour = time.localtime()[3]
 		if cur_hour > 6 and cur_hour < 17:
-			self.observation = owm.weather_at_id(self.place)
-			w = self.observation.get_weather()
-			temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
-			ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
+			try:
+				self.observation = owm.weather_at_id(self.place)
+			except (ParseResponseError, APICallError):
+				ftemp = ':('
+			else:
+				w = self.observation.get_weather()
+				temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
+				ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
 			self.label.configure(text=ftemp)
 		self.timer = self.label.after(600000, self.update_temp)
 	
