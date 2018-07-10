@@ -46,7 +46,7 @@ class change_location:
 		
 	def get_location(self):
 		"""Get the location change from the user"""
-		self.location_win.geometry(f'+{self.x_coordinate}+{self.y_coordinate}')
+		self.location_win.geometry(f'+{self.x_coordinate}+{self.y_coordinate-150}')
 		self.location_win.mainloop()
 		self.destroy()
 		return self.new_location
