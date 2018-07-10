@@ -14,7 +14,7 @@ class change_location:
 			    cur_location - the current weather location"""
 		self.location_win = tkinter.Tk()
 		self.location_win.overrideredirect(True)
-		self.location_win.geometry("200x100")
+		self.location_win.geometry("200x150")
 		self.location_win.geometry("+5+750")
 		self.location_win.title("Get Outta Town")
 		self.location_win.bind("<Button-1>", self.click)
@@ -76,7 +76,7 @@ class change_location:
 	
 	def invalid_entry(self):
 		"""Warn that the entered city is not a valid location."""
-		self.invalid.pack()
+		self.invalid.grid(row=3, column=1)
 		
 	def click(self, event):
 		"""On the left click event, saves the coordinates of the event."""
