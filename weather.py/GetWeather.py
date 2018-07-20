@@ -10,6 +10,9 @@ import pyowm
 import change_location as wcl
 from pyowm.exceptions.parse_response_error import ParseResponseError
 from pyowm.exceptions.api_call_error import APICallError
+import dateutil.parser
+from tkinter.constants import RAISED
+from Pmw import Balloon
 
 class temperature:
 	def __init__ (self, place):
@@ -35,13 +38,12 @@ class temperature:
 		self.popup_menu.add_command(label="Switch Color", command=self.change_color)
 		self.popup_menu.add_command(label="Change Location", command=self.get_location)
 		self.popup_menu.add_command(label="Exit", command=self.destroy)
-		
-		self.update_temp()
+		self.balloon = Balloon(self.label.master)
 
 	def update_temp(self):
 		"""Update the temperature every 10 minutes between 7 AM and 5 PM"""
 		cur_hour = time.localtime()[3]
-		if cur_hour > 6 and cur_hour < 17:
+		if cur_hour > 6 and cur_hour < 18:
 			try:
 				self.observation = owm.weather_at_id(self.place)
 			except (ParseResponseError, APICallError):
@@ -50,6 +52,8 @@ class temperature:
 				w = self.observation.get_weather()
 				temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
 				ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
+				self.balloon.unbind(self.label)
+				self.balloon.bind(self.label, self.get_balloon_text(w))
 			self.label.configure(text=ftemp)
 		self.timer = self.label.after(600000, self.update_temp)
 	
@@ -112,12 +116,37 @@ class temperature:
 		
 	def destroy(self):
 		"""Destroy any windows remaining open."""
-		self.change_loc.destroy()
+    
+		try:
+			self.change_loc.destroy()
+		except AttributeError:
+			pass
 		self.label.master.destroy()
-
+		
+	def get_balloon_text(self, w):
+		"""Get the weather text for the balloon.
+		
+		Parameters: w - a weather object"""
+		last_update_time = dateutil.parser.parse(
+									w.get_reference_time('iso')
+								).astimezone(tz=None)
+		rain = w.get_rain()
+		snow = w.get_snow()
+		wind = w.get_wind()['speed']
+		balloon_string = f'Last updated {last_update_time.hour}:{last_update_time.minute}'
+		if rain:
+			balloon_string = ''.join([balloon_string, f'\nRain {rain}'])
+		if snow:
+			balloon_string = ''.join([balloon_string, f'\nSnow {snow}'])
+		if wind:
+			balloon_string = ''.join([balloon_string, f'\nWind Speed: {wind}'])
+		return balloon_string
+  
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
 place = 5129780
 
 widg = temperature(place)
+
+widg.update_temp()
 widg.label.mainloop()
 
