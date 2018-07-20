@@ -116,6 +116,7 @@ class temperature:
 		
 	def destroy(self):
 		"""Destroy any windows remaining open."""
+    
 		try:
 			self.change_loc.destroy()
 		except AttributeError:
@@ -140,11 +141,12 @@ class temperature:
 		if wind:
 			balloon_string = ''.join([balloon_string, f'\nWind Speed: {wind}'])
 		return balloon_string
-		
+  
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
 place = 5129780
 
 widg = temperature(place)
+
 widg.update_temp()
 widg.label.mainloop()
 
