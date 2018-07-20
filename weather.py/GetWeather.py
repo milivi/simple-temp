@@ -52,7 +52,8 @@ class temperature:
 				w = self.observation.get_weather()
 				temp = math.ceil(w.get_temperature('fahrenheit')['temp'])
 				ftemp = f'{temp}' + u'\N{DEGREE SIGN}'
-				self.balloon.bind(self.label, self.get_last_update_time())
+				self.balloon.unbind(self.label)
+				self.balloon.bind(self.label, self.get_balloon_text(w))
 			self.label.configure(text=ftemp)
 		self.timer = self.label.after(600000, self.update_temp)
 	
@@ -121,11 +122,24 @@ class temperature:
 			pass
 		self.label.master.destroy()
 		
-	def get_last_update_time(self):
+	def get_balloon_text(self, w):
+		"""Get the weather text for the balloon.
+		
+		Parameters: w - a weather object"""
 		last_update_time = dateutil.parser.parse(
-									self.observation.get_weather().get_reference_time('iso')
+									w.get_reference_time('iso')
 								).astimezone(tz=None)
-		return f'Last updated {last_update_time.hour}:{last_update_time.minute}'
+		rain = w.get_rain()
+		snow = w.get_snow()
+		wind = w.get_wind()['speed']
+		balloon_string = f'Last updated {last_update_time.hour}:{last_update_time.minute}'
+		if rain:
+			balloon_string = ''.join([balloon_string, f'\nRain {rain}'])
+		if snow:
+			balloon_string = ''.join([balloon_string, f'\nSnow {snow}'])
+		if wind:
+			balloon_string = ''.join([balloon_string, f'\nWind Speed: {wind}'])
+		return balloon_string
 		
 owm = pyowm.OWM('2e87feb9a967628ae1d395b6c0d26cab')
 place = 5129780
