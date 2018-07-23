@@ -27,7 +27,7 @@ class temperature:
 					height=2, width=3)
 		self.label.master.overrideredirect(True)
 		self.label.master.wm_attributes("-topmost", True)
-		self.label.master.geometry("+5+850")
+		self.label.master.geometry("+50+50")
 		self.label.master.wm_attributes("-transparentcolor", "grey")
 		self.label.bind("<Button-1>", self.click)
 		self.label.bind("<Button-3>", self.right_click)
@@ -41,9 +41,9 @@ class temperature:
 		self.balloon = Balloon(self.label.master)
 
 	def update_temp(self):
-		"""Update the temperature every 10 minutes between 7 AM and 5 PM"""
+		"""Update the temperature every 10 minutes between 7 AM and 6 PM"""
 		cur_hour = time.localtime()[3]
-		if cur_hour > 6 and cur_hour < 18:
+		if cur_hour > 6 and cur_hour < 22:
 			try:
 				self.observation = owm.weather_at_id(self.place)
 			except (ParseResponseError, APICallError):

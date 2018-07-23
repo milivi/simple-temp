@@ -4,6 +4,7 @@ The location's validity is checked through pyowm"""
 
 import tkinter
 import pyowm
+from geopy.geocoders import Nominatim
 
 class change_location:
 	def __init__ (self, owm, cur_location, x_coordinate, y_coordinate):
@@ -62,6 +63,11 @@ class change_location:
 			self.invalid_entry()
 		else:
 			if poss_locations:
+				geolocator = Nominatim()
+				for location in poss_locations:
+					lat = location.get_lat()
+					lon = location.get_lon()
+					print(geolocator.reverse(f'{lat}, {lon}'))
 				self.new_location = poss_locations[0]
 				self.location_win.quit()
 			else:
