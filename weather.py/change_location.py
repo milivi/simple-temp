@@ -63,13 +63,8 @@ class change_location:
 			self.invalid_entry()
 		else:
 			if poss_locations:
-				geolocator = Nominatim()
-				for location in poss_locations:
-					lat = location.get_lat()
-					lon = location.get_lon()
-					print(geolocator.reverse(f'{lat}, {lon}'))
-				self.new_location = poss_locations[0]
-				self.location_win.quit()
+				self.new_location = self.choose_location(poss_locations)
+				#self.location_win.quit()
 			else:
 				self.invalid_entry()
 		
@@ -94,3 +89,22 @@ class change_location:
 		x = self.location_win.winfo_pointerx() - self.offset_x 
 		y = self.location_win.winfo_pointery() - self.offset_y
 		self.location_win.geometry(f'+{x}+{y}')
+		
+	def choose_location(self, poss_locations):
+		geolocator = Nominatim()
+		val = 1
+		v = tkinter.StringVar()
+		v.set("L")
+		self.location_win.geometry("700x500")
+		self.city_entry.config(state='disabled')
+		self.country_entry.config(state='disabled')
+		for location in poss_locations:
+			lat = location.get_lat()
+			lon = location.get_lon()
+			reverse_location = geolocator.reverse(f'{lat}, {lon}')
+			val += 1
+			rb = tkinter.Radiobutton(self.location_win, text=reverse_location,
+						variable=v, value=val)
+			rb.grid(row=val+2, column=1, pady=5)
+		chosen_location = poss_locations[0]
+		return chosen_location

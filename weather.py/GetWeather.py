@@ -134,6 +134,7 @@ class temperature:
 		snow = w.get_snow()
 		wind = w.get_wind()['speed']
 		balloon_string = f'Last updated {last_update_time.hour}:{last_update_time.minute}'
+		# OWM does not often report rain or snow
 		if rain:
 			balloon_string = ''.join([balloon_string, f'\nRain {rain}'])
 		if snow:
